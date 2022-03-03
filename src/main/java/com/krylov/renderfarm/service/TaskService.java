@@ -1,7 +1,6 @@
 package com.krylov.renderfarm.service;
 
 import com.krylov.renderfarm.dto.TaskDto;
-import com.krylov.renderfarm.entity.Task;
 
 import java.util.List;
 

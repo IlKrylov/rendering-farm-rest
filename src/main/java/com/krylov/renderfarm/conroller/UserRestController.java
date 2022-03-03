@@ -1,7 +1,6 @@
 package com.krylov.renderfarm.conroller;
 
 import com.krylov.renderfarm.dto.RegistrationRequestDto;
-import com.krylov.renderfarm.dto.TaskDto;
 import com.krylov.renderfarm.dto.UserDto;
 import com.krylov.renderfarm.service.TaskService;
 import com.krylov.renderfarm.service.UserService;
@@ -10,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/user")
@@ -34,7 +31,7 @@ public class UserRestController {
 
     @GetMapping("/tasks")
     public ResponseEntity getUserTasks(Authentication authentication) {
-        //TODO:
+        //TODO: get id from auth, run service method...
         return null;
     }
 }

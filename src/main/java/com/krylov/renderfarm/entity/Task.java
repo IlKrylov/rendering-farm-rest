@@ -32,7 +32,7 @@ public class Task {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "task")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "task")
     private List<TaskState> taskStates;
 
     public void addTaskState(TaskState taskState) {

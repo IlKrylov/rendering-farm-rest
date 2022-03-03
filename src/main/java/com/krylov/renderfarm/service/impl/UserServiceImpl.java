@@ -20,12 +20,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto register(RegistrationRequestDto registrationRequestDto) {
-        //TODO:
+        //TODO: validation
         User user = new User();
         user.setUserName(registrationRequestDto.getUserName());
         user.setPassword(registrationRequestDto.getPassword().toString());
-        userRepository.save(user);
-        return null;
+        user = userRepository.save(user);
+        return convertToDto(user);
     }
 
     public UserDto convertToDto(User user) {
