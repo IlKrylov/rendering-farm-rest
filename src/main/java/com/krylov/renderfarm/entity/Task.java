@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,5 +34,11 @@ public class Task {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "task")
     private List<TaskState> taskStates;
+
+    public void addTaskState(TaskState taskState) {
+        if (taskState == null) return;
+        if (taskStates == null) taskStates = new ArrayList<>();
+        taskStates.add(taskState);
+    }
 
 }

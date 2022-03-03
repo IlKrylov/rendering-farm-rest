@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,4 +30,10 @@ public class User {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
     private List<Task> tasks;
+
+    public void addTask(Task task) {
+        if (task == null) return;
+        if (tasks == null) tasks = new ArrayList<>();
+        tasks.add(task);
+    }
 }
