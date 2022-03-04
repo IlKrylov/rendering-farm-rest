@@ -22,7 +22,7 @@ public class TestScenario {
     }
 
     @Test
-    public void runTestScenario() {
+    public void runTestScenario() throws Exception {
 
         RegistrationRequestDto requestDto = new RegistrationRequestDto();
         requestDto.setUserName("TestUser");
@@ -40,12 +40,21 @@ public class TestScenario {
         taskDto2.setDescription("Test description2");
         taskService.createAndRun(1l, taskDto2);
 
-        List<TaskDto> taskDtoList = taskService.findAllTasksByUserId(1l);
+        System.out.println("Before WAITING: ");
+        List<TaskDto> taskDtoListBefore = taskService.findAllTasksByUserId(1l);
         System.out.println();
-        taskDtoList.forEach((e) -> System.out.println(e));
+        taskDtoListBefore.forEach((e) -> System.out.println(e));
 
-        TaskDto user1Task1 = taskService.findTaskById(1l,1l);
-        System.out.println(user1Task1);
+//        TaskDto user1Task1 = taskService.findTaskById(1l,1l);
+//        System.out.println(user1Task1);
+
+        Thread.sleep(200);
+        System.out.println("After WAITING: ");
+        List<TaskDto> taskDtoListAfter = taskService.findAllTasksByUserId(1l);
+        taskDtoListAfter.forEach((e) -> System.out.println(e));
+
+
+
 
     }
 }

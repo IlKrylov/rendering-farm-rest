@@ -7,10 +7,12 @@ import com.krylov.renderfarm.entity.User;
 import com.krylov.renderfarm.entity.enums.TaskStatus;
 import com.krylov.renderfarm.exception.DataBaseUpdateException;
 import com.krylov.renderfarm.exception.EntityNotFoundException;
+import com.krylov.renderfarm.exception.InvalidDtoException;
 import com.krylov.renderfarm.repository.TaskRepository;
 import com.krylov.renderfarm.repository.UserRepository;
 import com.krylov.renderfarm.service.TaskExecutorService;
 import com.krylov.renderfarm.service.TaskService;
+import com.krylov.renderfarm.service.utils.TaskStateFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,14 +29,17 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final TaskExecutorService taskExecutorService;
+    private final TaskStateFactory taskStateFactory;
 
     @Autowired
     public TaskServiceImpl(TaskRepository taskRepository,
                            UserRepository userRepository,
-                           TaskExecutorService taskExecutorService) {
+                           TaskExecutorService taskExecutorService,
+                           TaskStateFactory taskStateFactory) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.taskExecutorService = taskExecutorService;
+        this.taskStateFactory = taskStateFactory;
     }
 
     @Override
@@ -44,12 +49,11 @@ public class TaskServiceImpl implements TaskService {
         Task task = convertToEntity(userId, taskDto);
         try {
             task = taskRepository.save(task);
-            result = convertToDto(task);
         } catch (Exception e) {
             throw new DataBaseUpdateException("Unable to save task");
         }
-
-        taskExecutorService.assign(task);
+        taskExecutorService.submit(task);
+        result = convertToDto(task);
         return result;
     }
 
@@ -74,6 +78,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     public Task convertToEntity(Long userId, TaskDto taskDto) {
+        if (taskDto == null) throw new InvalidDtoException("Invalid TaskDto");
         Task result = new Task();
         result.setId(taskDto.getId());
         result.setTitle(taskDto.getTitle());
@@ -82,13 +87,7 @@ public class TaskServiceImpl implements TaskService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("Current user is not found"));
         result.setUser(user);
-
-        TaskState taskState = new TaskState();
-        taskState.setCreated(new Date());
-        taskState.setTaskStatus(TaskStatus.NEW);
-        taskState.setTask(result);
-        result.addTaskState(taskState);
-
+        result.addTaskState(taskStateFactory.createTaskState(result, TaskStatus.NEW));
         return result;
     }
 
