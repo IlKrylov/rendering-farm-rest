@@ -1,7 +1,7 @@
 package com.krylov.renderfarm.entity.enums;
 
 public enum TaskStatus {
+    NEW,
     RENDERING,
-    COMPLETE,
-    FINISHED_WITH_ERROR
+    COMPLETE
 }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,7 +22,7 @@ public class Task {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "title", unique = true, nullable = false)
+    @Column(name = "title", nullable = false)
     private String title;
 
     @Column(name = "description")
@@ -31,7 +32,13 @@ public class Task {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "task")
+    @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, mappedBy = "task")
     private List<TaskState> taskStates;
+
+    public void addTaskState(TaskState taskState) {
+        if (taskState == null) return;
+        if (taskStates == null) taskStates = new ArrayList<>();
+        taskStates.add(taskState);
+    }
 
 }
