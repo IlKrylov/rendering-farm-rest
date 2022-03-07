@@ -4,26 +4,32 @@ import com.krylov.renderfarm.entity.Task;
 import com.krylov.renderfarm.entity.TaskState;
 import com.krylov.renderfarm.entity.enums.TaskStatus;
 import com.krylov.renderfarm.exception.TaskExecutionException;
-import com.krylov.renderfarm.repository.TaskRepository;
+import com.krylov.renderfarm.repository.TaskStateRepository;
 import com.krylov.renderfarm.service.utils.TaskStateFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 public class TaskExecutorServiceMock implements com.krylov.renderfarm.service.TaskExecutorService {
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(4);
-    private final TaskRepository taskRepository;
+    private final TaskStateRepository taskStateRepository;
     private final TaskStateFactory taskStateFactory;
 
+    @Value("${rendering.mintime.minute}")
+    private Long renderingMinTimeMinute;
+    @Value("${rendering.maxtime.minute}")
+    private Long renderingMaxTimeMinute;
+
     @Autowired
-    public TaskExecutorServiceMock(TaskRepository taskRepository,
+    public TaskExecutorServiceMock(TaskStateRepository taskStateRepository,
                                    TaskStateFactory taskStateFactory) {
-        this.taskRepository = taskRepository;
+        this.taskStateRepository = taskStateRepository;
         this.taskStateFactory = taskStateFactory;
     }
 
@@ -31,25 +37,25 @@ public class TaskExecutorServiceMock implements com.krylov.renderfarm.service.Ta
     public void submit(Task task) {
         Runnable runnableTask = new Runnable() {
             @Override
-            @Transactional
             public void run() {
-                try{
+                try {
                     TaskState renderingState = taskStateFactory.createTaskState(task, TaskStatus.RENDERING);
-                    task.addTaskState(renderingState);
-                    taskRepository.save(task);
+                    taskStateRepository.save(renderingState);
 
-                    Thread.sleep(10);
+                    Long renderingTime = ThreadLocalRandom.current()
+                            .nextLong(renderingMinTimeMinute * 60000, renderingMaxTimeMinute * 60000);
+                    Thread.sleep(renderingTime);
 
                     TaskState completeState = taskStateFactory.createTaskState(task, TaskStatus.COMPLETE);
-                    task.addTaskState(completeState);
-                    taskRepository.save(task);
+                    taskStateRepository.save(completeState);
 
-                } catch (Exception e){
-                    throw new TaskExecutionException("TaskExecutionException");
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    throw new TaskExecutionException("Unable to save task state");
                 }
 
             }
         };
-        executorService.submit(runnableTask);
+        executorService.execute(runnableTask);
     }
 }

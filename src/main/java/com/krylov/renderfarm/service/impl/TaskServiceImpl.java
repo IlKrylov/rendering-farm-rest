@@ -2,7 +2,6 @@ package com.krylov.renderfarm.service.impl;
 
 import com.krylov.renderfarm.dto.TaskDto;
 import com.krylov.renderfarm.entity.Task;
-import com.krylov.renderfarm.entity.TaskState;
 import com.krylov.renderfarm.entity.User;
 import com.krylov.renderfarm.entity.enums.TaskStatus;
 import com.krylov.renderfarm.exception.DataBaseUpdateException;
@@ -43,12 +42,11 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @Transactional
     public TaskDto createAndRun(Long userId, TaskDto taskDto) {
         TaskDto result;
         Task task = convertToEntity(userId, taskDto);
         try {
-            task = taskRepository.save(task);
+            task = taskRepository.saveAndFlush(task);
         } catch (Exception e) {
             throw new DataBaseUpdateException("Unable to save task");
         }

@@ -6,6 +6,7 @@ import com.krylov.renderfarm.dto.UserDto;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 
@@ -45,16 +46,13 @@ public class TestScenario {
         System.out.println();
         taskDtoListBefore.forEach((e) -> System.out.println(e));
 
-//        TaskDto user1Task1 = taskService.findTaskById(1l,1l);
-//        System.out.println(user1Task1);
+        TaskDto user1Task1 = taskService.findTaskById(1l,1l);
+        System.out.println(user1Task1);
 
-        Thread.sleep(200);
+        Thread.sleep(40);
         System.out.println("After WAITING: ");
         List<TaskDto> taskDtoListAfter = taskService.findAllTasksByUserId(1l);
         taskDtoListAfter.forEach((e) -> System.out.println(e));
-
-
-
 
     }
 }
