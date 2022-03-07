@@ -1,22 +1,18 @@
 package com.krylov.renderfarm.dto;
 
+import com.krylov.renderfarm.entity.enums.TaskStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaskDto {
+public class TaskStateDto {
 
-    private Long id;
+    private Date date;
 
-    private String title;
-
-    private String description;
-
-    private List<TaskStateDto> statusLog;
-
+    private TaskStatus taskStatus;
 }

@@ -33,6 +33,11 @@ public class UserRestController {
         return new ResponseEntity(userDto, HttpStatus.OK);
     }
 
+    @GetMapping("/login")
+    public ResponseEntity checkAuthentication() {
+        return new ResponseEntity("Ok", HttpStatus.OK);
+    }
+
     @PostMapping("/tasks")
     public ResponseEntity createTask(Authentication authentication, @RequestBody TaskDto taskDto) {
         Long userId = ((UserDetailsImpl) authentication.getPrincipal()).getId();

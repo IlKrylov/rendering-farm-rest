@@ -1,6 +1,7 @@
 package com.krylov.renderfarm.service.impl;
 
 import com.krylov.renderfarm.dto.TaskDto;
+import com.krylov.renderfarm.dto.TaskStateDto;
 import com.krylov.renderfarm.entity.Task;
 import com.krylov.renderfarm.entity.User;
 import com.krylov.renderfarm.entity.enums.TaskStatus;
@@ -16,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -95,10 +93,10 @@ public class TaskServiceImpl implements TaskService {
         result.setTitle(task.getTitle());
         result.setDescription(task.getDescription());
 
-        Map<Date, TaskStatus> statusLog = new LinkedHashMap<>();
+        List<TaskStateDto> statusLog = new ArrayList<>();
         task.getTaskStates().stream()
                 .sorted((ts1, ts2) -> ts1.getCreated().compareTo(ts2.getCreated()))
-                .forEach(ts -> statusLog.put(ts.getCreated(), ts.getTaskStatus()));
+                .forEach(ts -> statusLog.add(new TaskStateDto(ts.getCreated(), ts.getTaskStatus())));
         result.setStatusLog(statusLog);
         return result;
     }
